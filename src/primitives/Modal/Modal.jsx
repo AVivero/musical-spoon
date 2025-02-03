@@ -1,4 +1,10 @@
-import React, { useState, useEffect, createContext, useId } from "react";
+import React, {
+  useState,
+  useEffect,
+  createContext,
+  useId,
+  useContext,
+} from "react";
 import { createPortal } from "react-dom";
 
 const ModalContext = createContext();
@@ -32,14 +38,6 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
     }
   }
 
-  function setOpenEventListeners() {
-    document.addEventListener("keydown", handleKeyDownWhenOpen);
-  }
-
-  function removeOpenEventListeners() {
-    document.removeEventListener("keydown", handleKeyDownWhenOpen);
-  }
-
   useEffect(() => {
     if (open) {
       /**
@@ -49,7 +47,7 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
        * - add event listeners for escape key
        */
       lockBodyScroll();
-      setOpenEventListeners();
+      document.addEventListener("keydown", handleKeyDownWhenOpen);
     } else {
       /**
        * TODO:
@@ -58,7 +56,7 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
        * - remove event listeners for escape key
        */
       unlockBodyScroll();
-      removeOpenEventListeners();
+      document.removeEventListener("keydown", handleKeyDownWhenOpen);
     }
   }, [open]);
 
@@ -111,6 +109,7 @@ const ModalPortal = ({ children, container = document.body }) => {
  * @param {Object} props
  * @param {React.ReactNode} props.children
  * @param {string} props.className
+ * @param {string} props.name
  * @returns {React.ReactNode}
  */
 const ModalTrigger = ({ children, className, name = "trigger" }) => {
@@ -138,7 +137,7 @@ const ModalTrigger = ({ children, className, name = "trigger" }) => {
  * @param {string} props.className
  * @returns {React.ReactNode}
  */
-const ModalOverlay = ({ children, className }) => {
+const ModalOverlay = ({ children, className, ...props }) => {
   const { idPrefix, open, setOpen } = useContext(ModalContext);
 
   if (!open) return null;
@@ -148,6 +147,7 @@ const ModalOverlay = ({ children, className }) => {
       id={`${idPrefix}-overlay`}
       className={className}
       onClick={() => setOpen(false)}
+      {...props}
     >
       {children}
     </div>
@@ -180,7 +180,7 @@ const ModalTitle = ({ children, className }) => {
  * @param {string} props.className
  * @returns {React.ReactNode}
  */
-const ModalContent = ({ children }) => {
+const ModalContent = ({ children, className }) => {
   const { idPrefix, open } = useContext(ModalContext);
 
   if (!open) return null;
@@ -197,10 +197,11 @@ const ModalContent = ({ children }) => {
  * @param {Object} props
  * @param {React.ReactNode} props.children
  * @param {string} props.className
+ * @param {string} props.name
  * @returns {React.ReactNode}
  */
 const ModalClose = ({ children, className, name = "close" }) => {
-  const { open, setOpen } = useContext(ModalContext);
+  const { idPrefix, open, setOpen } = useContext(ModalContext);
 
   if (!open) return null;
 
