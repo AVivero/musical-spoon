@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { vi } from "vitest";
+import { beforeEach, vi } from "vitest";
 
 import Modal from "./Modal";
 
@@ -24,7 +24,7 @@ function Scenario({ onClose }) {
 describe("Modal", () => {
   const mockClose = vi.fn();
 
-  beforeAll(() => {
+  beforeEach(() => {
     mockClose.mockReset();
   });
 
