@@ -12,15 +12,15 @@ As recommended, the project was created using the following techs:
 
 # Modal Component
 
-    ## Component Architecture / Compound Component Pattern
-    I decided to follow a compound component pattern, as it allow for great flexibility and encapsulation. If I had to build this component, for a real project, and if requirements and existing use cases allowed it, I would have created a wrapper over Radix UI Modal component, as it's a well-known and battle-tested library. I have personally found the accessibility implementation of Radix's Dialog to be excellent.
+## Component Architecture / Compound Component Pattern
+I decided to follow a compound component pattern, as it allow for great flexibility and encapsulation. If I had to build this component, for a real project, and if requirements and existing use cases allowed it, I would have created a wrapper over Radix UI Modal component, as it's a well-known and battle-tested library. I have personally found the accessibility implementation of Radix's Dialog to be excellent.
 
-    ## Future Improvements
-    - Redirect focus to the modal when it opens and implement focus trapping
-    - Review each primitive's props and add/remove as needed
-    - Review all primitives for accessibility
-    - Implement more stories, showcasing different use cases / integrations, highlighting the flexibility of the component. 
-    - Rethink styling approach, currently only via className. The team may also want to support styling via css in js, howeveer this could also be implemented at a superior wrapper.
+## Future Improvements
+- Redirect focus to the modal when it opens and implement focus trapping
+- Review each primitive's props and add/remove as needed
+- Review all primitives for accessibility
+- Implement more stories, showcasing different use cases / integrations, highlighting the flexibility of the component. 
+- Rethink styling approach, currently only via className. The team may also want to support styling via css in js, howeveer this could also be implemented at a superior wrapper.
 
 # General Comments
 
