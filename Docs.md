@@ -12,6 +12,8 @@ As recommended, the project was created using the following techs:
 
 # Modal Component
 
+The Modal component definition, tests and stories can be found in the `src/primitives/Modal` [directory](./src/primitives/Modal).
+
 ## Component Architecture / Compound Component Pattern
 I decided to follow a compound component pattern, as it allow for great flexibility and encapsulation. If I had to build this component, for a real project, and if requirements and existing use cases allowed it, I would have created a wrapper over Radix UI Modal component, as it's a well-known and battle-tested library. I have personally found the accessibility implementation of Radix's Dialog to be excellent.
 
