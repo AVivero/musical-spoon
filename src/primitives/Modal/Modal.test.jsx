@@ -1,16 +1,23 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { vi } from "vitest";
 
 import Modal from "./Modal";
 
 function Scenario({ onClose }) {
   return (
-    <Modal onClose={onClose}>
-      <Modal.Trigger name="open">Open Modal</Modal.Trigger>
+    <Modal defaultOpen onClose={onClose}>
+      <Modal.Trigger name="open">
+        Open Modal
+      </Modal.Trigger>
       <Modal.Portal>
-        <Modal.Overlay />
+        <Modal.Overlay data-testid="mock-overlay" />
         <Modal.Content>
-          <Modal.Title>Modal</Modal.Title>
-          <Modal.Close name="close">Close Modal</Modal.Close>
+          <Modal.Title>Modal Title</Modal.Title>
+          <Modal.Close name="close">
+            Close Modal
+          </Modal.Close>
+          <div>Modal content</div>
         </Modal.Content>
       </Modal.Portal>
     </Modal>
@@ -47,23 +54,21 @@ describe("Modal", () => {
     });
 
     test("renders dismissible button that calls onClose action when clicked", async () => {
-      const { user } = renderWithUser(<Scenario onClose={mockClose} />);
+      render(<Scenario onClose={mockClose} />);
 
       const closeButton = screen.getByRole("button", { name: /close/i });
 
-      await user.click(closeButton);
+      await closeButton?.click();
 
       expect(mockClose).toHaveBeenCalledTimes(1);
     });
 
     test("calls onClose action when clicking outside of the modal", async () => {
-      const { user } = renderWithUser(
-        <Scenario data-testid="mockId" onClose={mockClose} />
-      );
+      render(<Scenario onClose={mockClose} />);
 
-      const scrimElement = screen.getByTestId("mockId");
+      const modalOverlay = screen.getByTestId("mock-overlay");
 
-      await user.click(scrimElement);
+      await modalOverlay?.click();
 
       expect(mockClose).toHaveBeenCalledTimes(1);
     });
