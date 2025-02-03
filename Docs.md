@@ -30,4 +30,4 @@ Test started at 12:00PM on 02/03/2025. Ended at about 3:15PM, after a 20 mins fo
 
 ## Comments on the test
 
-- I found this test fun and engaging. I personally find TDD very interesting, and I actually try to use this approach when building similar components, as applicable. A time estimation of 2:30h is spot on.
+- I found this test fun and engaging. I personally find TDD very useful, and I actually try to use this approach when building similar components, as applicable. A time estimation of 2:30h is spot on.
