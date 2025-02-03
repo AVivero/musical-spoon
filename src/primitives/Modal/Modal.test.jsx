@@ -1,4 +1,5 @@
 import React from "react";
+import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 
@@ -7,16 +8,12 @@ import Modal from "./Modal";
 function Scenario({ onClose }) {
   return (
     <Modal defaultOpen onClose={onClose}>
-      <Modal.Trigger name="open">
-        Open Modal
-      </Modal.Trigger>
+      <Modal.Trigger name="open">Open Modal</Modal.Trigger>
       <Modal.Portal>
         <Modal.Overlay data-testid="mock-overlay" />
         <Modal.Content>
           <Modal.Title>Modal Title</Modal.Title>
-          <Modal.Close name="close">
-            Close Modal
-          </Modal.Close>
+          <Modal.Close name="close">Close Modal</Modal.Close>
           <div>Modal content</div>
         </Modal.Content>
       </Modal.Portal>
