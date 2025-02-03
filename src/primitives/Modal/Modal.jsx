@@ -35,6 +35,7 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
   function handleKeyDownWhenOpen(event) {
     if (event.key === "Escape") {
       setOpen(false);
+      typeof onClose === "function" && onClose();
     }
   }
 
