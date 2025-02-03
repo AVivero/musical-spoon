@@ -1,4 +1,5 @@
-import React, { useState, useEffect, createContext, Portal } from "react";
+import React, { useState, useEffect, createContext, useId } from "react";
+import { createPortal } from "react-dom";
 
 const ModalContext = createContext();
 
@@ -15,6 +16,30 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
     typeof defaultOpen === "boolean" ? defaultOpen : false
   );
 
+  const id = useId();
+
+  function lockBodyScroll() {
+    document.body.style.overflow = "hidden";
+  }
+
+  function unlockBodyScroll() {
+    document.body.style.overflow = "auto";
+  }
+
+  function handleKeyDownWhenOpen(event) {
+    if (event.key === "Escape") {
+      setOpen(false);
+    }
+  }
+
+  function setOpenEventListeners() {
+    document.addEventListener("keydown", handleKeyDownWhenOpen);
+  }
+
+  function removeOpenEventListeners() {
+    document.removeEventListener("keydown", handleKeyDownWhenOpen);
+  }
+
   useEffect(() => {
     if (open) {
       /**
@@ -23,6 +48,8 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
        * - isolate modal for accessibility
        * - add event listeners for escape key
        */
+      lockBodyScroll();
+      setOpenEventListeners();
     } else {
       /**
        * TODO:
@@ -30,54 +57,171 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
        * - remove modal isolation for accessibility
        * - remove event listeners for escape key
        */
-      typeof onClose === "function" && onClose();
+      unlockBodyScroll();
+      removeOpenEventListeners();
     }
   }, [open]);
 
+  /**
+   * Handle setOpen
+   * @description handle state changes from children components.
+   * Handled like this so we don't need to add onClose definition to same effect handling rest of state change logic.
+   * @param {boolean} value
+   * @returns {boolean}
+   */
+  function handleSetOpen(value) {
+    setOpen((prev) => {
+      if (value === false && prev) {
+        typeof onClose === "function" && onClose();
+      }
+      return value;
+    });
+  }
+
   return (
-    <ModalContext.Provider value={{ open, setOpen }}>
-      <div role="dialog">{children}</div>
+    <ModalContext.Provider
+      value={{ idPrefix: id, open, setOpen: handleSetOpen }}
+    >
+      <div role="dialog" aria-modal="true" aria-labelledby={`${id}-title`}>
+        {children}
+      </div>
     </ModalContext.Provider>
   );
 };
 
-const ModalTrigger = ({ children, className }) => {
-  const { setOpen } = useContext(ModalContext);
+/**
+ * ModalPortal component
+ * @description Portal the modal content to a desired container (defaults to document.body).
+ * Modals should sit in the root of the document body. This component can help achieve easily.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @param {HTMLElement} props.container
+ * @returns {React.ReactNode}
+ */
+const ModalPortal = ({ children, container = document.body }) => {
+  const { open } = useContext(ModalContext);
+
+  if (!open) return null;
+
+  return createPortal(children, container);
+};
+
+/**
+ * ModalTrigger component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @param {string} props.className
+ * @returns {React.ReactNode}
+ */
+const ModalTrigger = ({ children, className, name = "trigger" }) => {
+  const { idPrefix, open, setOpen } = useContext(ModalContext);
 
   return (
-    <button className={className} onClick={() => setOpen(true)}>
+    <button
+      id={`${idPrefix}-trigger`}
+      role="button"
+      name={name}
+      aria-expanded={open}
+      aria-controls={`${idPrefix}-content`}
+      className={className}
+      onClick={() => setOpen(true)}
+    >
       {children}
     </button>
   );
 };
 
+/**
+ * ModalOverlay component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @param {string} props.className
+ * @returns {React.ReactNode}
+ */
 const ModalOverlay = ({ children, className }) => {
-  const { setOpen } = useContext(ModalContext);
+  const { idPrefix, open, setOpen } = useContext(ModalContext);
+
+  if (!open) return null;
 
   return (
-    <div className={className} onClick={() => setOpen(false)}>
+    <div
+      id={`${idPrefix}-overlay`}
+      className={className}
+      onClick={() => setOpen(false)}
+    >
       {children}
     </div>
   );
 };
 
-const ModalContent = ({ children }) => {
-  return <div>{children}</div>;
-};
+/**
+ * ModalTitle component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @param {string} props.className
+ * @returns {React.ReactNode}
+ */
+const ModalTitle = ({ children, className }) => {
+  const { idPrefix, open } = useContext(ModalContext);
 
-const ModalClose = ({ children, className }) => {
-  const { setOpen } = useContext(ModalContext);
+  if (!open) return null;
 
   return (
-    <button className={className} onClick={() => setOpen(false)}>
+    <h2 id={`${idPrefix}-title`} role="heading" className={className}>
+      {children}
+    </h2>
+  );
+};
+
+/**
+ * ModalContent component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @param {string} props.className
+ * @returns {React.ReactNode}
+ */
+const ModalContent = ({ children }) => {
+  const { idPrefix, open } = useContext(ModalContext);
+
+  if (!open) return null;
+
+  return (
+    <div id={`${idPrefix}-content`} role="region" className={className}>
+      {children}
+    </div>
+  );
+};
+
+/**
+ * ModalClose component
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @param {string} props.className
+ * @returns {React.ReactNode}
+ */
+const ModalClose = ({ children, className, name = "close" }) => {
+  const { open, setOpen } = useContext(ModalContext);
+
+  if (!open) return null;
+
+  return (
+    <button
+      id={`${idPrefix}-close`}
+      role="button"
+      name={name}
+      className={className}
+      onClick={() => setOpen(false)}
+    >
       {children}
     </button>
   );
 };
 
 export default Object.assign(Modal, {
+  Portal: ModalPortal,
   Trigger: ModalTrigger,
   Overlay: ModalOverlay,
+  Title: ModalTitle,
   Content: ModalContent,
   Close: ModalClose,
 });
