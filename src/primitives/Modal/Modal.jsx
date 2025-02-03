@@ -41,21 +41,9 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
 
   useEffect(() => {
     if (open) {
-      /**
-       * TODO:
-       * - lock body scroll
-       * - isolate modal for accessibility
-       * - add event listeners for escape key
-       */
       lockBodyScroll();
       document.addEventListener("keydown", handleKeyDownWhenOpen);
     } else {
-      /**
-       * TODO:
-       * - unlock body scroll
-       * - remove modal isolation for accessibility
-       * - remove event listeners for escape key
-       */
       unlockBodyScroll();
       document.removeEventListener("keydown", handleKeyDownWhenOpen);
     }
