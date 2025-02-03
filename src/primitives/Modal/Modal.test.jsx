@@ -3,7 +3,18 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Modal from "./Modal";
 
 function Scenario({ onClose }) {
-  return <Modal onClose={onClose}></Modal>;
+  return (
+    <Modal onClose={onClose}>
+      <Modal.Trigger name="open">Open Modal</Modal.Trigger>
+      <Modal.Portal>
+        <Modal.Overlay />
+        <Modal.Content>
+          <Modal.Title>Modal</Modal.Title>
+          <Modal.Close name="close">Close Modal</Modal.Close>
+        </Modal.Content>
+      </Modal.Portal>
+    </Modal>
+  );
 }
 
 describe("Modal", () => {
