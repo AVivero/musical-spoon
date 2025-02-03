@@ -69,7 +69,8 @@ const Modal = ({ children, onClose, defaultOpen = false }) => {
    */
   function handleSetOpen(value) {
     setOpen((prev) => {
-      if (value === false && prev) {
+      if (value !== prev && !value) {
+        console.log("closing modal");
         typeof onClose === "function" && onClose();
       }
       return value;
